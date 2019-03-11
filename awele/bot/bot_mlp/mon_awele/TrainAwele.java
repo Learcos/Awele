@@ -1,6 +1,6 @@
-package awele.bot.alpha_awele.mon_awele;
+package awele.bot.bot_mlp.mon_awele;
 
-import awele.bot.alpha_awele.Bot_MLP;
+import awele.bot.bot_mlp.Bot_MLP;
 import java.util.ArrayList;
 
 /**

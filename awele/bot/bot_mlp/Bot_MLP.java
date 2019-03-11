@@ -1,10 +1,10 @@
-package awele.bot.alpha_awele;
+package awele.bot.bot_mlp;
 
 import awele.bot.*;
 import awele.core.Board;
 import awele.core.InvalidBotException;
-import awele.bot.alpha_awele.mlp.*;
-import awele.bot.alpha_awele.mon_awele.*;
+import awele.bot.bot_mlp.mlp.*;
+import awele.bot.bot_mlp.mon_awele.*;
 import awele.data.*;
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package awele.bot.alpha_awele.mlp;
+package awele.bot.bot_mlp.mlp;
 
 /**
  * @author Alexandre Blansché
