@@ -59,7 +59,8 @@ public class HiddenNeuron extends Neuron
      * @param index L'indice du poids auquel on veut accéder
      * @return Le poids de la connexion
      */
-    public double getWeight (int index){
+    public double getWeight (int index)
+    {
         return this.weights [index];
     }
     

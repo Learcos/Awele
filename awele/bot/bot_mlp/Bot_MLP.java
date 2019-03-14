@@ -24,16 +24,24 @@ import java.util.ArrayList;
  * 
  */
 
-public class Bot_MLP extends Bot{
+public class Bot_MLP extends Bot {
 
     private MultiLayerPerceptron mlp;
-
-    private static final int TAINING_TIME = 10; // en secondes
+    private long timer;
+    private int training_games;
+    private static final int TRAINING_TIME = 10; // en secondes
 
     public Bot_MLP() throws InvalidBotException{
-        mlp = new MultiLayerPerceptron(Board.NB_HOLES*2, 10, 20, Board.NB_HOLES);
-        this.setBotName("Toast");
-        this.addAuthor("Julien Lafille");
+    	// Initialisation du réseau de neurones les quatres paramètres suivants : 
+    	//  - nombre de neurones d'entrées : le nombre de trous du plateau de jeu (les notres + celles de l'adversaire)
+    	//  - nombre de neurones cachés : 5
+    	//  - nombre de neurones par couche cachée : 10
+    	//  - nombre de neurones de sortie : le nombre de trous de notre plateau
+        mlp = new MultiLayerPerceptron(Board.NB_HOLES*2, 5, 10, Board.NB_HOLES);
+        
+        this.setBotName("Réseau de neurones");
+        this.addAuthor("Vincent Gindt");
+        this.addAuthor("Luca Orlandi");
     }
 
 	@Override
@@ -73,17 +81,19 @@ public class Bot_MLP extends Bot{
 	@Override
 	public void learn() {
         
+		// Apprend les meilleures prédictions grace aux AweleData
         supervised();
 
-        long start = System.currentTimeMillis ();
-        int parties = 0;
+        // Commence à s'entrainer gràca à un algo génétique dans la limite du temps imposé 
+        timer = System.currentTimeMillis ();
+        training_games = 0;
 
-        while(System.currentTimeMillis ()-start < TAINING_TIME * 1000){
+        while(System.currentTimeMillis () - timer < TRAINING_TIME * 1000){
             unsupervised();
-            parties++;
+            training_games++;
         }
 
-        System.out.println(parties + " games played");
+        System.out.println( "Parties d'entrainement efféctuées : " + training_games);
 
     }
 
