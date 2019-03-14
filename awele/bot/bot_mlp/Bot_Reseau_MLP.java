@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class Bot_Reseau_MLP extends Bot {
 
     private MultiLayerPerceptron mlp;
-    private static final int TRAINING_TIME = 5; // en secondes
+    private static final int TRAINING_TIME = 5; // temps en secondes
 
     public Bot_Reseau_MLP() throws InvalidBotException{
     	
@@ -41,23 +41,26 @@ public class Bot_Reseau_MLP extends Bot {
     }
 
 	@Override
-	public void initialize() {
-
-	}
-
+	public void initialize() { }
+	
 	@Override
 	public double[] getDecision(Board board) {
 
-        double[] input = new double[12];
-
-        for(int i = 0; i < 6; i++){
-            input[i] = board.getPlayerHoles()[i]; // Les 6 trous du joueur (de 0 à 5 dans l'input)
-            input[i + 6] = board.getOpponentHoles()[i]; // Les 6 trous de l'adversaire (de 6 à 12 dans l'input)
+		double[] input = new double[12];
+		
+		for(int i = 0; i < 6; i++){
+            input[i] = board.getPlayerHoles()[i]; // Récupère le nombre de graines dans les 6 trous du joueur (de 0 à 5 dans l'input)
+            input[i + 6] = board.getOpponentHoles()[i]; // Récupère le nombre de graines dans les 6 trous de l'adversaire (de 6 à 12 dans l'input)
         }
-
+		
+        double[] output = new double[6];
+        
         // Faire une prédiction pour remplir le tableau des sorties avec des indices de confiance selon chaque coup
-		return mlp.predict(input);
+		output = mlp.predict(input);
+		
+		return output;
     }
+	
 
 	@Override
 	public void learn() {
@@ -91,10 +94,10 @@ public class Bot_Reseau_MLP extends Bot {
             /* Récupère les données contenues dans Awele.Data */
             
             for(int i = 0; i < 6; i++){
-                input[i] =  observation.getPlayerHoles()[i]; // Les 6 trous du joueur (de 0 à 5 dans l'input)
-                input[i + 6] = observation.getOppenentHoles()[i]; // Les 6 trous de l'adversaire (de 6 à 12 dans l'input)
+                input[i] =  observation.getPlayerHoles()[i]; // Récupère le nombre de graines dans les 6 trous du joueur (de 0 à 5 dans l'input)
+                input[i + 6] = observation.getOppenentHoles()[i]; // Récupère le nombre de graines dans les 6 trous de l'adversaire (de 6 à 12 dans l'input)
             }
-            int move = observation.getMove();
+            int move = observation.getMove(); // Récupère le coup joué
 
             /* Traitement des données */
 
