@@ -1,4 +1,4 @@
-package awele.bot.bot_mlp.mlp;
+package awele.bot.neural_network_mlp.mlp;
 
 /**
  * @author Alexandre Blansché

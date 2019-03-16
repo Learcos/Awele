@@ -1,4 +1,4 @@
-package awele.bot.bot_mlp.mon_awele;
+package awele.bot.neural_network_mlp.mon_awele;
 
 public class Observation{
 
