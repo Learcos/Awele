@@ -26,6 +26,9 @@ public class HiddenNeuron extends Neuron
     /** Erreur estimée du neurone */
     private double error;
     
+    
+    public HiddenNeuron() {}
+    
     /**
      * @param previousLayer Les neurones de la couche précédente
      * @param activationFunction La fonction d'activation du neurone
@@ -63,12 +66,37 @@ public class HiddenNeuron extends Neuron
         return this.weights [index];
     }
     
+    public double[] getWeights () {
+    	return this.weights;
+    }
+    
+    
+    public void cloneWeights(double[] poids) {
+    	this.weights = new double[poids.length];
+    	for(int i = 0; i< this.weights.length; i++) this.weights[i] = poids[i];
+    }
+    
     /**
      * @return L'erreur de ce neurone à propager lors de l'apprentissage
      */
     public double getError ()
     {
         return this.error;
+    }
+    
+   
+    public void setError (double error)
+    {
+        this.error = error;
+    }
+    
+    public Neuron[] getPreviousLayer() {
+    	return this.previousLayer;
+    }
+    
+    
+    public void setActivationFunction(ActivationFunction activF) {
+    	this.activationFunction = SigmoidFunction.getInstance();
     }
     
     /**
@@ -79,7 +107,7 @@ public class HiddenNeuron extends Neuron
         /* On récupère les niveaux d'activations de la couche précédente */
         double [] input = new double [this.previousLayer.length];
         for (int i = 0; i < input.length; i++)
-            input [i] = this.previousLayer [i].getActivation ();
+            input [i] = this.previousLayer[i].getActivation ();
         /* On met à jour l'activation du neurone */
         this.setActivation (this.activationFunction.getActivation (input, this.weights));
     }
@@ -99,6 +127,15 @@ public class HiddenNeuron extends Neuron
             double delta = learningStep * this.error * this.previousLayer [i].getActivation ();
             this.weights [i] += delta;
         }
+    }
+    
+    
+    public void clonePreviousLayer(Neuron[] prevLayer) {
+    	this.previousLayer = new Neuron [prevLayer.length + 1];
+        for (int i = 0; i < prevLayer.length; i++) {
+            this.previousLayer[i] = prevLayer [i];
+        }
+        this.previousLayer [prevLayer.length] = BiasNeuron.getInstance ();
     }
     
     /**

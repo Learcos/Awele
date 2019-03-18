@@ -32,6 +32,7 @@ public class Bot_MLP extends Bot{
 
     public Bot_MLP() throws InvalidBotException{
         mlp = new MultiLayerPerceptron(Board.NB_HOLES*2, 10, 20, Board.NB_HOLES);
+        MultiLayerPerceptron mlp_clone = mlp.clone(SigmoidFunction.getInstance());
         this.setBotName("Toast");
         this.addAuthor("Julien Lafille");
     }
