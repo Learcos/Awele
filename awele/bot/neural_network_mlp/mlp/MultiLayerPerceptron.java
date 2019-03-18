@@ -1,18 +1,24 @@
-package awele.bot.alpha_awele.mlp;
+package awele.bot.neural_network_mlp.mlp;
+
+import java.util.Random;
 
 /**
  * @author Alexandre Blansché
  * Perceptron multicouche
- * 
- * Modifié par Julien Lafille pour pouvoir avoir plusieurs 
- * valeures de sortie
- * 
  */
 public class MultiLayerPerceptron
 {
+    /** Nombre de couches cachées */
+    private static int DEFAULT_NB_HIDDEN_LAYERS = 5;
+    
+    /** Nombre de neurones par couche cachée */
+    private static int DEFAULT_NB_HIDDEN_NEURONS_PER_LAYER = 10;
     
     /** Pas d'apprentissage par défaut */
     private static double LEARNING_STEP = .05;
+
+    /** Génération pseudo-aléatoire de nombre */
+    private static Random random = new Random (System.currentTimeMillis ());
 
     /** Couche d'entrée */
     private InputNeuron [] inputLayer;
@@ -20,7 +26,7 @@ public class MultiLayerPerceptron
     /** Couches cachées */
     private HiddenNeuron [][] hiddenLayers;
     
-    /** "Couche" de sortie (un seul neurone) */
+    /** "Couche" de sortie (une liste de neurones) */
     private HiddenNeuron[] outputLayer;
     
     
@@ -78,6 +84,7 @@ public class MultiLayerPerceptron
      * @param nbInputs Nombre de neurones de la couche d'entrée
      * @param nbHidden Nombre de couches cachées
      * @param nbNeurons Nombre de neurones par couche cachée
+     * @param nbOutput Nombre de neurones de la couche sortie
      */
     public MultiLayerPerceptron (int nbInputs, int nbHidden, int nbNeurons, int nbOutput)
     {
@@ -101,7 +108,14 @@ public class MultiLayerPerceptron
 
     }
     
-    
+    /**
+     * Constructeur
+     * @param nbInputs Nombre de neurones de la couche d'entrée
+     */
+    public MultiLayerPerceptron (int nbInputs)
+    {
+        this (nbInputs, MultiLayerPerceptron.DEFAULT_NB_HIDDEN_LAYERS, MultiLayerPerceptron.DEFAULT_NB_HIDDEN_NEURONS_PER_LAYER, 1);
+    }
 
     /**
      * Rétropropagation du gradient
@@ -116,7 +130,7 @@ public class MultiLayerPerceptron
         for(int i = 0; i < outputLayer.length; i++)
             error[i] = label[i] - pred[i];
 
-        /* Mise à jour des poids des connexions vers le neurone de sortie */
+        /* Mise à jour des poids des connexions vers les neurones de sortie */
         for(int i = 0; i < outputLayer.length; i++)
             this.outputLayer[i].updateWeights (error[i], MultiLayerPerceptron.LEARNING_STEP);
         
@@ -149,11 +163,11 @@ public class MultiLayerPerceptron
      * @param object Un pixel de l'image
      * @return Le degré d'appartenance à la classe positive
      */
-    public double[] predict (double [] input)
+    public double[] predict (double [] object)
     {
         /* Activation de la couche d'entrée */
         for (int j = 0; j < this.inputLayer.length; j++)
-            this.inputLayer [j].updateActivation (input [j]);
+            this.inputLayer [j].updateActivation (object [j]);
         /* Activation des couches cachées */
         for (int j = 0; j < this.hiddenLayers.length; j++)
             for (int k = 0; k < this.hiddenLayers [j].length; k++)

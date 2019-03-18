@@ -8,21 +8,18 @@ import java.util.ArrayList;
 /**
  * @author Alexandre Blansché
  * Base de donnée de coups joués sur laquelle peut se baser l'apprentissage
- * C'est une classe singleton
  */
 public class AweleData extends ArrayList <AweleObservation>
 {
     private static final String PATH = "data/awele.data";
-    private static AweleData instance = null;
     
     /**
      * @return Les données
      */
     public static AweleData getInstance ()
     {
-        if (AweleData.instance == null)
-            AweleData.instance = new AweleData ();
-        return AweleData.instance;
+        AweleData instance = new AweleData ();
+        return instance;
     }
     
     private AweleData ()
