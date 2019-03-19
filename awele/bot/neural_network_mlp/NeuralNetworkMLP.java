@@ -183,7 +183,7 @@ public class NeuralNetworkMLP extends Bot {
         while(System.currentTimeMillis () - timer < PRACTICE_TIME * 1000);  // Tant que l'heure - l'heure à laquelle le timer s'est lancé est inférieur au temps d'entrainement
         	
         //A la fin du timer, notre IA this devient la meilleure de notre championnat (qui se trouve à l'indice 0)
-        this.setMLP( champions[0].getMLP().clone(SigmoidFunction.getInstance()) );
+        // this.setMLP( champions[0].getMLP().clone(SigmoidFunction.getInstance()) );
         
 
         System.out.println( "Parties d'entrainement efféctuées : " + practice_games);        
@@ -205,7 +205,7 @@ public class NeuralNetworkMLP extends Bot {
     		//hN = mlp.getHiddenLayers(i, neuronRandom);
     		//hN.setWeights(neuronRandom, weightRandom);
     		//mlp.setHiddenLayers(i, neuronRandom, hN);
-    		mlp.setHiddenLayersWeights(i, neuronRandom, weightRandom);
+    		mlp.mutation(i, neuronRandom, weightRandom);
     	}
     }
     

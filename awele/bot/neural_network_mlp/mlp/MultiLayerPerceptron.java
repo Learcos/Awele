@@ -186,7 +186,13 @@ public class MultiLayerPerceptron
     	return MLP_clone;
     }
 
-	public void setHiddenLayersWeights(int numberHiddenNeuron, int numberNeuron, double weight) {
+    /**
+     * Mute le mlp en changeant le poids d'un neurone caché
+     * @param numberHiddenNeuron
+     * @param numberNeuron
+     * @param weight
+     */
+	public void mutation(int numberHiddenNeuron, int numberNeuron, double weight) {
 		this.hiddenLayers[numberHiddenNeuron][numberNeuron].setWeights(numberNeuron, weight);
 		
 	}
