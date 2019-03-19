@@ -71,10 +71,18 @@ public class HiddenNeuron extends Neuron
     	return this.weights;
     }
     
+    public void setWeights(int index, double poids) {
+    	this.weights[index] = poids;
+    }
+    
+    public void setWeights(double[] poids) {
+    	this.weights = poids;
+    }
     
     public void cloneWeights(double[] poids) {
     	this.weights = new double[poids.length];
-    	for(int i = 0; i< this.weights.length; i++) this.weights[i] = poids[i];
+    	for(int i = 0; i< this.weights.length; i++) 
+    		this.weights[i] = poids[i];
     }
     
     /**
