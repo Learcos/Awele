@@ -28,44 +28,32 @@ public class Awele extends OutputWriter
         this.runningTime = 0;
     }
     
-    private static int otherPlayer (int player)
-    {
-        return 1 - player;
-    }
-    
     private int [] game (int firstPlayer)
     {
         boolean end = false;
         Board board = new Board ();
-        int [] score = new int [2];
-        int currentPlayer = firstPlayer;
-        board.setCurrentPlayer (currentPlayer);
+        board.setCurrentPlayer (firstPlayer);
         this.printDebug ();
         this.printDebug (board.toString ());
-        this.printDebug ("Score : " + score [0] + " - " + score [1]);
+        this.printDebug ("Score : " + board.getScore (0) + " - " + board.getScore (0));
         while (!end)
         {
+            int currentPlayer = board.getCurrentPlayer ();
             this.nbMoves += 1;
             double [] decision = this.players [currentPlayer].getDecision (board);
             int moveScore = board.playMove (currentPlayer, decision);
-            if (moveScore < 0)
+            if ((moveScore < 0) ||
+                    (board.getScore (Board.otherPlayer (board.getCurrentPlayer ())) >= 25) ||
+                    (board.getNbSeeds () <= 6))
                 end = true;
-            else
-                score [currentPlayer] += moveScore;
-            if ((score [currentPlayer] >= 25) || (board.getNbSeeds () <= 6)) 
-                end = true;
-            else
-            {
-                currentPlayer = Awele.otherPlayer (currentPlayer);
-                board.setCurrentPlayer (currentPlayer);
-            }
-            if (board.getNbSeeds () <= 6)
-                score [currentPlayer] += board.getNbSeeds (currentPlayer);
             this.printDebug ();
             this.printDebug (board);
-            this.printDebug ("Score : " + score [0] + " - " + score [1]);
+            this.printDebug ("Score : " + board.getScore (0) + " - " + board.getScore (0));
         }
         this.printDebug ();
+        int [] score = new int [2];
+        score [0] = board.getScore (0);
+        score [1] = board.getScore (1);
         return score;
     }
     

@@ -15,6 +15,7 @@ public class Board
     public static final int NB_HOLES = 6;
     private static final int NB_SEEDS = 4;
     int [][] holes;
+    private int [] score;
     int currentPlayer;
     private List<List<Integer>> log;
     
@@ -23,6 +24,7 @@ public class Board
      */
     public Board ()
     {
+        this.score = new int [2];
         this.holes = new int [2][Board.NB_HOLES];
         for (int i = 0; i < Board.NB_HOLES; i++)
         {
@@ -104,6 +106,11 @@ public class Board
     void setCurrentPlayer (int currentPlayer)
     {
         this.currentPlayer = currentPlayer;
+    }
+    
+    void changeCurrentPlayer ()
+    {
+        this.setCurrentPlayer (Board.otherPlayer (this.currentPlayer));
     }
     
     /**
@@ -214,6 +221,13 @@ public class Board
         }
         else
             score = -1;
+        if (score < 0)
+            this.score [this.currentPlayer] += this.getNbSeeds (this.currentPlayer);
+        else
+        {
+            this.score [this.currentPlayer] += score;
+            this.changeCurrentPlayer ();
+        }
         return score;
     }
     
@@ -277,6 +291,8 @@ public class Board
     {
         Board clone = new Board ();
         clone.currentPlayer = this.currentPlayer;
+        clone.score [0] = this.score [0];
+        clone.score [1] = this.score [1];
         for (int i = 0; i < Board.NB_HOLES; i++)
         {
             clone.holes [0][i] = this.holes [0][i];
@@ -290,5 +306,14 @@ public class Board
         for (Integer i: this.log.get (1))
             clone.log.get (1).add (i);
         return clone;
+    }
+
+    /**
+     * @param player L'indice d'un joueur
+     * @return Le score du joueur
+     */
+    public int getScore (int player)
+    {
+        return this.score [player];
     }
 }
