@@ -10,6 +10,7 @@ import awele.run.Main;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -280,7 +281,7 @@ public class NeuralNetworkMLP extends Bot {
         final Map <String, Integer> map = new HashMap <String, Integer> ();
         for (int i = 0; i < 30; i++)
             map.put (champions[i].getName (), i);
-        /*Collections.sort (champions, new Comparator <Bot> ()
+        Arrays.sort(champions, new Comparator <Bot> ()
         {
             @Override
             public int compare(Bot bot1, Bot bot2)
@@ -289,7 +290,7 @@ public class NeuralNetworkMLP extends Bot {
                 Integer index2 = map.get (bot2.getName ());
                 return Double.compare (points [index1], points [index2]);
             }
-        });*/
+        });
         java.util.Arrays.sort (points);
         System.out.println ("Rangs :");
         for (int i = nbBots - 1; i >= 0; i--)
