@@ -32,11 +32,11 @@ import java.util.Random;
 public class NeuralNetworkMLP extends Bot {
 
     private MultiLayerPerceptron MLP;
-    private static final int PRACTICE_TIME = 5; // temps en secondes
+    private static final int PRACTICE_TIME = 10; // temps en secondes
     private int nbInputNeurons = Board.NB_HOLES*2;
     private int nbOutputNeurons = Board.NB_HOLES;
-    private int nbHiddenNeurons = 5;
-    private int nbNeurons = 10;
+    private int nbHiddenNeurons = 5; 
+    private int nbNeurons = 20; // Ne dois pas �tre inf�rieur au nombre de neurones d'entr�es
 
     /**
      * Constructeur
@@ -172,7 +172,8 @@ public class NeuralNetworkMLP extends Bot {
     	}
     	
         do {
-        	//champions = tournament(champions);
+        	// Les champions sont envoy�s dans un tournois pour s'affronter et reviennent ordonn�s dans l'ordre croissant du plus fort au plus faible
+        	champions = tournament(champions);
         	
         	// Initialisation pour les manches suivantes
         	for(int i = 20; i < 30; i++) {
@@ -184,7 +185,7 @@ public class NeuralNetworkMLP extends Bot {
         while(System.currentTimeMillis () - timer < PRACTICE_TIME * 1000);  // Tant que l'heure - l'heure à laquelle le timer s'est lancé est inférieur au temps d'entrainement
         	
         //A la fin du timer, notre IA this devient la meilleure de notre championnat (qui se trouve à l'indice 0)
-        // this.setMLP( champions[0].getMLP().clone(SigmoidFunction.getInstance()) );
+        this.setMLP( champions[0].getMLP().clone(SigmoidFunction.getInstance()) );
         
 
         System.out.println( "Parties d'entrainement efféctuées : " + practice_games);        
@@ -197,16 +198,13 @@ public class NeuralNetworkMLP extends Bot {
     public void modifyGenesRandomly(MultiLayerPerceptron mlp) {
     	Random random = new Random();
     	
-    	HiddenNeuron hN;
-    	int neuronRandom = random.nextInt(nbNeurons); // Génère un nombre aléatoire entre 0 et nbNeuron-1 pour le numéro du neurone à modifier
+    	int nbNeuronRandom = random.nextInt(nbNeurons); // Génère un nombre aléatoire entre 0 et nbNeuron-1 pour le numéro du neurone à modifier
     	double weightRandom = random.nextDouble () * 2 * 0.001 - 0.001; // Génère un nombre aléatoire entre -0.001 et 0.001 pour le poids du neurone à modifier
     	
-    	// Pour chaque couche cachée de mlp, un neurone choisi au hasard va être changé aléatoirement
-    	for(int i = 0; i < nbHiddenNeurons; i++) {
-    		//hN = mlp.getHiddenLayers(i, neuronRandom);
-    		//hN.setWeights(neuronRandom, weightRandom);
-    		//mlp.setHiddenLayers(i, neuronRandom, hN);
-    		mlp.mutation(i, neuronRandom, weightRandom);
+    	// Pour chaque couche cachée de mlp ( EXCEPT�E LA 1�re car elle a 12 poids d'entr�e au lieu de nbNeurons comme les autres), 
+    	// un neurone choisi au hasard va être changé aléatoirement
+    	for(int i = 1; i < nbHiddenNeurons; i++) {
+    		mlp.mutation(i, nbNeuronRandom, weightRandom);
     	}
     }
     
@@ -219,9 +217,17 @@ public class NeuralNetworkMLP extends Bot {
     public MultiLayerPerceptron reproduction(MultiLayerPerceptron mlpFather, MultiLayerPerceptron mlpMother) {
     	MultiLayerPerceptron mlpSon = mlpFather.clone(SigmoidFunction.getInstance());
     	
+    	HiddenNeuron neuronRandom;
     	
     	for(int i = 0; i < nbHiddenNeurons; i++) {
     		for(int j = 0; j < nbNeurons; j++) {
+    			
+    			if (i%2 == 0) // i est pair
+    				neuronRandom = mlpFather.getHiddenLayers(i, j); // Le neurone du fils sera celui du p�re
+    			else // i est impair
+    				neuronRandom = mlpMother.getHiddenLayers(i, j); // Le neurone du fils sera celui de la m�re
+    			
+    			mlpSon.setHiddenLayers(i, j, neuronRandom);
     			
     			
     		}
