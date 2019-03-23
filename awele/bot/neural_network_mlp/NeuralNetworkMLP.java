@@ -217,16 +217,23 @@ public class NeuralNetworkMLP extends Bot {
     public MultiLayerPerceptron reproduction(MultiLayerPerceptron mlpFather, MultiLayerPerceptron mlpMother) {
     	MultiLayerPerceptron mlpSon = mlpFather.clone(SigmoidFunction.getInstance());
     	
-    	HiddenNeuron neuronRandom;
+    	HiddenNeuron neuronRandom = new HiddenNeuron();
     	
     	for(int i = 0; i < nbHiddenNeurons; i++) {
     		for(int j = 0; j < nbNeurons; j++) {
     			
-    			if (i%2 == 0) // i est pair
-    				neuronRandom = mlpFather.getHiddenLayers(i, j); // Le neurone du fils sera celui du père
-    			else // i est impair
-    				neuronRandom = mlpMother.getHiddenLayers(i, j); // Le neurone du fils sera celui de la mère
-    			
+    			if (i%2 == 0) { // i est pair
+    				neuronRandom.clonePreviousLayer(mlpFather.getInputLayer());
+    				neuronRandom.cloneWeights(mlpFather.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui du père
+    				neuronRandom.setActivationFunction(SigmoidFunction.getInstance());
+    				neuronRandom.setError(mlpFather.getHiddenLayers(i, j).getError());
+    			}
+    			else { // i est impair
+    				neuronRandom.clonePreviousLayer(mlpMother.getInputLayer());
+    				neuronRandom.cloneWeights(mlpMother.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui de la mère
+    				neuronRandom.setActivationFunction(SigmoidFunction.getInstance());
+    				neuronRandom.setError(mlpMother.getHiddenLayers(i, j).getError());
+    			}
     			mlpSon.setHiddenLayers(i, j, neuronRandom);
     			
     			

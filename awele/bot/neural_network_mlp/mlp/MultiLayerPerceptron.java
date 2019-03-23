@@ -212,6 +212,10 @@ public class MultiLayerPerceptron
 	public void setHiddenLayers(int indexI, int indexJ, HiddenNeuron hiddenLayers) {
 		this.hiddenLayers[indexI][indexJ] = hiddenLayers;
 	}
+
+	public InputNeuron[] getInputLayer() {
+		return inputLayer;
+	}
 	
 	
 
