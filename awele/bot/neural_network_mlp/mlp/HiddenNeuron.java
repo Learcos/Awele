@@ -76,10 +76,6 @@ public class HiddenNeuron extends Neuron
     }
     
     public void setWeights(double[] poids) {
-    	this.weights = poids;
-    }
-    
-    public void cloneWeights(double[] poids) {
     	this.weights = new double[poids.length];
     	for(int i = 0; i< this.weights.length; i++) 
     		this.weights[i] = poids[i];
@@ -139,12 +135,11 @@ public class HiddenNeuron extends Neuron
     }
     
     
-    public void clonePreviousLayer(Neuron[] prevLayer) {
-    	this.previousLayer = new Neuron [prevLayer.length + 1];
+    public void setPreviousLayer(Neuron[] prevLayer) {
+    	this.previousLayer = new Neuron [prevLayer.length];
         for (int i = 0; i < prevLayer.length; i++) {
             this.previousLayer[i] = prevLayer [i];
         }
-        this.previousLayer [prevLayer.length] = BiasNeuron.getInstance ();
     }
     
     /**

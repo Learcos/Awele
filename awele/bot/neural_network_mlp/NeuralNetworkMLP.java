@@ -36,7 +36,7 @@ public class NeuralNetworkMLP extends Bot {
     private int nbInputNeurons = Board.NB_HOLES*2;
     private int nbOutputNeurons = Board.NB_HOLES;
     private int nbHiddenNeurons = 5; 
-    private int nbNeurons = 20; // Ne dois pas �tre inf�rieur au nombre de neurones d'entr�es
+    private int nbNeurons = 20; // Ne dois pas �tre inf�rieur au nombre de neurones d'entr�es
 
     /**
      * Constructeur
@@ -154,8 +154,7 @@ public class NeuralNetworkMLP extends Bot {
      *  - 20 des meilleures IA à la manche précédente et 10 IA reproduites avec les gênes des 20 meilleures, 
      */
     private void learnWithPractice() {
-
-    	NeuralNetworkMLP[] champions = new NeuralNetworkMLP[30];
+        NeuralNetworkMLP[] champions = new NeuralNetworkMLP[30];
     	int practice_games = 0;
 		long timer = System.currentTimeMillis ();
 		
@@ -163,32 +162,39 @@ public class NeuralNetworkMLP extends Bot {
     	for(int i =0; i < 30; i++) {
     		
 			try {
-				champions[i] = new  NeuralNetworkMLP(MLP.clone(SigmoidFunction.getInstance())); // Ce sont 30 clones de notre MLP
+				champions[i] = new  NeuralNetworkMLP(MLP.clone()); // Ce sont 30 clones de notre MLP
 			} catch (InvalidBotException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
-    		modifyGenesRandomly(champions[i].getMLP());
+			}
+			if(i > 10) {
+				modifyGenesRandomly(champions[i].getMLP());
+			}
     	}
     	
         do {
-        	// Les champions sont envoy�s dans un tournois pour s'affronter et reviennent ordonn�s dans l'ordre croissant du plus fort au plus faible
+        	// Les champions sont envoyés dans un tournois pour s'affronter et reviennent ordonnés dans l'ordre croissant du plus fort au plus faible
         	champions = tournament(champions);
         	
         	// Initialisation pour les manches suivantes
         	for(int i = 20; i < 30; i++) {
-        		// Reproduction : les IA participantes de 20 à 29 sont des mixtes entre les gênes des 20 meilleures
+        		// Reproduction : les IA participantes de 20 Ã  29 sont des mixtes entre les gÃªnes des 20 meilleures
         		champions[i].setMLP(reproduction(champions[i-20].getMLP(), champions[i-19].getMLP()));
         	}
+        	
+        	for(int i = 10; i < 20;i++) {
+        		modifyGenesRandomly(champions[i].getMLP());
+        	}
+        	
         	practice_games++;
         }
-        while(System.currentTimeMillis () - timer < PRACTICE_TIME * 1000);  // Tant que l'heure - l'heure à laquelle le timer s'est lancé est inférieur au temps d'entrainement
+        while(System.currentTimeMillis () - timer < PRACTICE_TIME * 1000);  // Tant que l'heure - l'heure Ã  laquelle le timer s'est lancÃ© est infÃ©rieur au temps d'entrainement
         	
-        //A la fin du timer, notre IA this devient la meilleure de notre championnat (qui se trouve à l'indice 0)
-        this.setMLP( champions[0].getMLP().clone(SigmoidFunction.getInstance()) );
+        //A la fin du timer, notre IA this devient la meilleure de notre championnat (qui se trouve Ã  l'indice 0)
+        this.setMLP(champions[0].getMLP().clone() );
         
 
-        System.out.println( "Parties d'entrainement efféctuées : " + practice_games);        
+        System.out.println( "Parties d'entrainement effÃ©ctuÃ©es : " + practice_games);    
     }
     
     /**
@@ -196,15 +202,16 @@ public class NeuralNetworkMLP extends Bot {
      * @param mlp
      */
     public void modifyGenesRandomly(MultiLayerPerceptron mlp) {
-    	Random random = new Random();
+    	Random random = new Random(System.currentTimeMillis());
     	
-    	int nbNeuronRandom = random.nextInt(nbNeurons); // Génère un nombre aléatoire entre 0 et nbNeuron-1 pour le numéro du neurone à modifier
-    	double weightRandom = random.nextDouble () * 2 * 0.001 - 0.001; // Génère un nombre aléatoire entre -0.001 et 0.001 pour le poids du neurone à modifier
+    	int nbNeuronRandom = random.nextInt(nbNeurons); // GÃ©nÃ¨re un nombre alÃ©atoire entre 0 et nbNeuron-1 pour le numÃ©ro du neurone Ã  modifier
+    	int nbNeuronOtherLayerRandom = random.nextInt(nbNeurons);
+    	double weightRandom = random.nextDouble () * 2 * 0.001 - 0.001; // GÃ©nÃ¨re un nombre alÃ©atoire entre -0.001 et 0.001 pour le poids du neurone Ã  modifier
     	
-    	// Pour chaque couche cachée de mlp ( EXCEPT�E LA 1�re car elle a 12 poids d'entr�e au lieu de nbNeurons comme les autres), 
-    	// un neurone choisi au hasard va être changé aléatoirement
+    	// Pour chaque couche cachÃ©e de mlp ( EXCEPTÉE LA 1ère car elle a 12 poids d'entrée au lieu de nbNeurons comme les autres), 
+    	// un neurone choisi au hasard va Ãªtre changÃ© alÃ©atoirement
     	for(int i = 1; i < nbHiddenNeurons; i++) {
-    		mlp.mutation(i, nbNeuronRandom, weightRandom);
+    		mlp.mutation(i, nbNeuronRandom, nbNeuronOtherLayerRandom, weightRandom);
     	}
     }
     
@@ -215,7 +222,7 @@ public class NeuralNetworkMLP extends Bot {
      * @return
      */
     public MultiLayerPerceptron reproduction(MultiLayerPerceptron mlpFather, MultiLayerPerceptron mlpMother) {
-    	MultiLayerPerceptron mlpSon = mlpFather.clone(SigmoidFunction.getInstance());
+    	MultiLayerPerceptron mlpSon = mlpFather.clone();
     	
     	HiddenNeuron neuronRandom = new HiddenNeuron();
     	
@@ -223,14 +230,14 @@ public class NeuralNetworkMLP extends Bot {
     		for(int j = 0; j < nbNeurons; j++) {
     			
     			if (i%2 == 0) { // i est pair
-    				neuronRandom.clonePreviousLayer(mlpFather.getInputLayer());
-    				neuronRandom.cloneWeights(mlpFather.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui du p�re
+    				neuronRandom.setPreviousLayer(mlpFather.getInputLayer());
+    				neuronRandom.setWeights(mlpFather.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui du p�re
     				neuronRandom.setActivationFunction(SigmoidFunction.getInstance());
     				neuronRandom.setError(mlpFather.getHiddenLayers(i, j).getError());
     			}
     			else { // i est impair
-    				neuronRandom.clonePreviousLayer(mlpMother.getInputLayer());
-    				neuronRandom.cloneWeights(mlpMother.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui de la m�re
+    				neuronRandom.setPreviousLayer(mlpMother.getInputLayer());
+    				neuronRandom.setWeights(mlpMother.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui de la m�re
     				neuronRandom.setActivationFunction(SigmoidFunction.getInstance());
     				neuronRandom.setError(mlpMother.getHiddenLayers(i, j).getError());
     			}
