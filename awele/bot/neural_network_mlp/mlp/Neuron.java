@@ -25,4 +25,6 @@ public abstract class Neuron
     {
         return this.activation;
     }
+    
+    public abstract Neuron clone();
 }

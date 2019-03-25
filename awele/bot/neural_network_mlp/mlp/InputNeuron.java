@@ -14,4 +14,8 @@ public class InputNeuron extends Neuron
     {
         this.setActivation (value);
     }
+    
+    public Neuron clone() {
+    	return new InputNeuron();
+    }
 }

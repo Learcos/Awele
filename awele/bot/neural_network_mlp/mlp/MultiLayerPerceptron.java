@@ -144,7 +144,7 @@ public class MultiLayerPerceptron
 	/**
      * Clone un MLP
      */
-    public MultiLayerPerceptron clone(ActivationFunction activF) {
+    public MultiLayerPerceptron clone() {
     	int nbInputs = this.inputLayer.length;
     	int nbOutputs = this.outputLayer.length;
     	int nbHidden = this.hiddenLayers.length;
@@ -153,36 +153,26 @@ public class MultiLayerPerceptron
     	MLP_clone.inputLayer = new InputNeuron[nbInputs];
     	MLP_clone.outputLayer = new HiddenNeuron[nbOutputs];
     	MLP_clone.hiddenLayers = new HiddenNeuron[nbHidden][nbNeurons];
+    	
+    	//inputs
     	for(int i = 0; i < inputLayer.length; i++) {
-    		MLP_clone.inputLayer[i] = new InputNeuron();
-    		MLP_clone.inputLayer[i].setActivation(this.inputLayer[i].getActivation());		
+    		MLP_clone.inputLayer[i] = (InputNeuron)(this.inputLayer[i].clone());		
     	}
-    	/* Première couche cachée */
-        for (int j = 0; j < this.hiddenLayers[0].length; j++) {
-            MLP_clone.hiddenLayers[0][j] = new HiddenNeuron ();
-            MLP_clone.hiddenLayers[0][j].clonePreviousLayer(MLP_clone.inputLayer);
-            MLP_clone.hiddenLayers[0][j].cloneWeights(this.hiddenLayers[0][j].getWeights());
-            MLP_clone.hiddenLayers[0][j].setActivationFunction(activF);
-            MLP_clone.hiddenLayers[0][j].setError(this.hiddenLayers[0][j].getError());
-        }
-        /* Autres couches cachées */
-		for(int k = 1; k < hiddenLayers.length; k++) {
-			for(int l = 0; l < hiddenLayers[0].length; l++) {
-			MLP_clone.hiddenLayers[k][l] = new HiddenNeuron ();
-            MLP_clone.hiddenLayers[k][l].clonePreviousLayer(MLP_clone.hiddenLayers[k-1]);
-            MLP_clone.hiddenLayers[k][l].cloneWeights(this.hiddenLayers[k][l].getWeights());
-            MLP_clone.hiddenLayers[k][l].setActivationFunction(activF);
-            MLP_clone.hiddenLayers[k][l].setError(this.hiddenLayers[k][l].getError());
-			}
+    	
+    	//boucle sur les couches
+    	for(int i = 0; i < this.hiddenLayers.length;i++) {
+    		//Boucle sur les neurones d'une couche
+    		for(int j = 0; j < this.hiddenLayers[i].length;j++) {
+    			MLP_clone.hiddenLayers[i][j] = (HiddenNeuron)(this.hiddenLayers[i][j].clone());
+    		}
     	}
-		/* couche de sortie */
+    	
+    
+		//couche de sortie
 		for(int i = 0; i < outputLayer.length; i++) {
-			MLP_clone.outputLayer[i] = new HiddenNeuron ();
-            MLP_clone.outputLayer[i].clonePreviousLayer(MLP_clone.hiddenLayers[nbHidden - 1]);
-            MLP_clone.outputLayer[i].cloneWeights(this.hiddenLayers[nbHidden - 1][i].getWeights());
-            MLP_clone.outputLayer[i].setActivationFunction(activF);
-            MLP_clone.outputLayer[i].setError(this.hiddenLayers[nbHidden - 1][i].getError());
+			MLP_clone.outputLayer[i] = (HiddenNeuron)(this.outputLayer[i].clone());
 		}
+		
     	return MLP_clone;
     }
 
@@ -192,8 +182,8 @@ public class MultiLayerPerceptron
      * @param numberNeuron
      * @param weight
      */
-	public void mutation(int numberHiddenNeuron, int numberNeuron, double weight) {
-		this.hiddenLayers[numberHiddenNeuron][numberNeuron].setWeights(numberNeuron, weight);
+	public void mutation(int numberHiddenNeuron, int numberNeuron, int numberOtherLayer, double weight) {
+		this.hiddenLayers[numberHiddenNeuron][numberNeuron].setWeights(numberOtherLayer, weight);
 		
 	}
 

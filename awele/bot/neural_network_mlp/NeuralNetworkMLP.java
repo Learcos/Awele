@@ -163,12 +163,14 @@ public class NeuralNetworkMLP extends Bot {
     	for(int i =0; i < 30; i++) {
     		
 			try {
-				champions[i] = new  NeuralNetworkMLP(MLP.clone(SigmoidFunction.getInstance())); // Ce sont 30 clones de notre MLP
+				champions[i] = new  NeuralNetworkMLP(MLP.clone()); // Ce sont 30 clones de notre MLP
 			} catch (InvalidBotException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
-    		modifyGenesRandomly(champions[i].getMLP());
+			}
+			if(i > 10) {
+				modifyGenesRandomly(champions[i].getMLP());
+			}
     	}
     	
         do {
@@ -180,12 +182,17 @@ public class NeuralNetworkMLP extends Bot {
         		// Reproduction : les IA participantes de 20 à 29 sont des mixtes entre les gênes des 20 meilleures
         		champions[i].setMLP(reproduction(champions[i-20].getMLP(), champions[i-19].getMLP()));
         	}
+        	
+        	for(int i = 10; i < 20;i++) {
+        		modifyGenesRandomly(champions[i].getMLP());
+        	}
+        	
         	practice_games++;
         }
         while(System.currentTimeMillis () - timer < PRACTICE_TIME * 1000);  // Tant que l'heure - l'heure à laquelle le timer s'est lancé est inférieur au temps d'entrainement
         	
         //A la fin du timer, notre IA this devient la meilleure de notre championnat (qui se trouve à l'indice 0)
-        this.setMLP( champions[0].getMLP().clone(SigmoidFunction.getInstance()) );
+        this.setMLP(champions[0].getMLP().clone() );
         
 
         System.out.println( "Parties d'entrainement efféctuées : " + practice_games);        
@@ -196,15 +203,16 @@ public class NeuralNetworkMLP extends Bot {
      * @param mlp
      */
     public void modifyGenesRandomly(MultiLayerPerceptron mlp) {
-    	Random random = new Random();
+    	Random random = new Random(System.currentTimeMillis());
     	
     	int nbNeuronRandom = random.nextInt(nbNeurons); // Génère un nombre aléatoire entre 0 et nbNeuron-1 pour le numéro du neurone à modifier
+    	int nbNeuronOtherLayerRandom = random.nextInt(nbNeurons);
     	double weightRandom = random.nextDouble () * 2 * 0.001 - 0.001; // Génère un nombre aléatoire entre -0.001 et 0.001 pour le poids du neurone à modifier
     	
     	// Pour chaque couche cachée de mlp ( EXCEPT�E LA 1�re car elle a 12 poids d'entr�e au lieu de nbNeurons comme les autres), 
     	// un neurone choisi au hasard va être changé aléatoirement
     	for(int i = 1; i < nbHiddenNeurons; i++) {
-    		mlp.mutation(i, nbNeuronRandom, weightRandom);
+    		mlp.mutation(i, nbNeuronRandom, nbNeuronOtherLayerRandom, weightRandom);
     	}
     }
     
@@ -215,7 +223,7 @@ public class NeuralNetworkMLP extends Bot {
      * @return
      */
     public MultiLayerPerceptron reproduction(MultiLayerPerceptron mlpFather, MultiLayerPerceptron mlpMother) {
-    	MultiLayerPerceptron mlpSon = mlpFather.clone(SigmoidFunction.getInstance());
+    	MultiLayerPerceptron mlpSon = mlpFather.clone();
     	
     	HiddenNeuron neuronRandom = new HiddenNeuron();
     	
@@ -223,19 +231,12 @@ public class NeuralNetworkMLP extends Bot {
     		for(int j = 0; j < nbNeurons; j++) {
     			
     			if (i%2 == 0) { // i est pair
-    				neuronRandom.clonePreviousLayer(mlpFather.getInputLayer());
-    				neuronRandom.cloneWeights(mlpFather.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui du p�re
-    				neuronRandom.setActivationFunction(SigmoidFunction.getInstance());
-    				neuronRandom.setError(mlpFather.getHiddenLayers(i, j).getError());
+    				neuronRandom = (HiddenNeuron)(mlpFather.getHiddenLayers(i,j).clone());
     			}
     			else { // i est impair
-    				neuronRandom.clonePreviousLayer(mlpMother.getInputLayer());
-    				neuronRandom.cloneWeights(mlpMother.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui de la m�re
-    				neuronRandom.setActivationFunction(SigmoidFunction.getInstance());
-    				neuronRandom.setError(mlpMother.getHiddenLayers(i, j).getError());
+    				neuronRandom = (HiddenNeuron)(mlpMother.getHiddenLayers(i,j).clone());
     			}
     			mlpSon.setHiddenLayers(i, j, neuronRandom);
-    			
     			
     		}
     	}

@@ -140,7 +140,7 @@ public class HiddenNeuron extends Neuron
     
     
     public void clonePreviousLayer(Neuron[] prevLayer) {
-    	this.previousLayer = new Neuron [prevLayer.length + 1];
+    	this.previousLayer = new Neuron [prevLayer.length];
         for (int i = 0; i < prevLayer.length; i++) {
             this.previousLayer[i] = prevLayer [i];
         }
@@ -153,5 +153,28 @@ public class HiddenNeuron extends Neuron
     private static double initWeight ()
     {
         return HiddenNeuron.random.nextDouble () * 2 * HiddenNeuron.MAX_VALUE - HiddenNeuron.MAX_VALUE;
+    }
+    
+    public Neuron clone() {
+    	HiddenNeuron clone = new HiddenNeuron();
+    	
+    	clone.activationFunction = this.activationFunction;
+    	
+    	clone.previousLayer = new Neuron[this.previousLayer.length];
+    	
+    	for(int i = 0; i < this.previousLayer.length;i++) {
+    		clone.previousLayer[i] = this.previousLayer[i].clone();
+    	}
+    	
+    	clone.weights = new double[this.weights.length];
+    	
+    	for(int i = 0; i < this.weights.length;i++) {
+    		clone.weights[i] = this.weights[i];
+    	}
+    	
+    	clone.error = this.error;
+    	
+    	return clone;
+    	
     }
 }

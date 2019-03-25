@@ -27,4 +27,8 @@ public class BiasNeuron extends Neuron
             BiasNeuron.instance = new BiasNeuron ();
         return BiasNeuron.instance;
     }
+    
+    public Neuron clone() {
+    	return this;
+    }
 }
