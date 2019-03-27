@@ -6,14 +6,9 @@ import awele.core.Board;
 import awele.core.InvalidBotException;
 import awele.bot.neural_network_mlp.mlp.*;
 import awele.data.*;
-import awele.run.Main;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -26,13 +21,13 @@ import java.util.Random;
  * 
  * Il s'entraîne avec l'apprentissage :
  *  - des meilleurs prédictions contenues dans les donnés de Awele.Data
- *  - via algo génétique, 50 clones légèrement modifiés s'affrontent à chaque manche, le meilleur d'entre eux est selectionné
+ *  - via algo génétique, 30 clones s'affrontent à chaque manche, le meilleur d'entre eux est selectionné
  */
 
 public class NeuralNetworkMLP extends Bot {
 
     private MultiLayerPerceptron MLP;
-    private static final int PRACTICE_TIME = 10; // temps en secondes
+    private static final int PRACTICE_TIME = 10 * 1000; // temps d'entrainement (1000 signifie 1 seconde)
     private int nbInputNeurons = Board.NB_HOLES*2;
     private int nbOutputNeurons = Board.NB_HOLES;
     private int nbHiddenNeurons = 5; 
@@ -72,7 +67,7 @@ public class NeuralNetworkMLP extends Bot {
 		return MLP;
 	}
 
-	public void setMLP(MultiLayerPerceptron mLP) {
+	private void setMLP(MultiLayerPerceptron mLP) {
 		MLP = mLP;
 	}
 
@@ -149,7 +144,7 @@ public class NeuralNetworkMLP extends Bot {
      * Le bot apprend de meilleurs prédictions en appliquant un algorithme génétique
      * Le principe est de faire s'affronter au jeu : 
      * Au départ (la 1ère manche) :
-     *  - 30 IA semblables de lui-même peu modifiées (aléatoirement)
+     *  - 30 IA semblables de lui-même dont 20 sont peu modifiées, mutés (aléatoirement)
      * Puis ensuite à chaque manche :
      *  - 20 des meilleures IA à la manche précédente et 10 IA reproduites avec les gênes des 20 meilleures, 
      */
@@ -177,24 +172,25 @@ public class NeuralNetworkMLP extends Bot {
         	champions = tournament(champions);
         	
         	// Initialisation pour les manches suivantes
-        	for(int i = 20; i < 30; i++) {
-        		// Reproduction : les IA participantes de 20 Ã  29 sont des mixtes entre les gÃªnes des 20 meilleures
-        		champions[i].setMLP(reproduction(champions[i-20].getMLP(), champions[i-19].getMLP()));
-        	}
         	
-        	for(int i = 10; i < 20;i++) {
+        	for(int i = 10; i < 20;i++) { 
+        		// Les bots à l'index 10 à 19 sont mutés
         		modifyGenesRandomly(champions[i].getMLP());
+        	}
+        	for(int i = 20; i < 30; i++) {
+        		// Reproduction : les bots de l'index 20 Ã  29 sont des mixtes entre les gênes des 20 meilleures
+        		champions[i].setMLP(reproduction(champions[i-20].getMLP(), champions[i-19].getMLP()));
         	}
         	
         	practice_games++;
         }
-        while(System.currentTimeMillis () - timer < PRACTICE_TIME * 1000);  // Tant que l'heure - l'heure Ã  laquelle le timer s'est lancÃ© est infÃ©rieur au temps d'entrainement
+        while(System.currentTimeMillis () - timer < PRACTICE_TIME);  // Tant que l'heure - l'heure Ã  laquelle le timer s'est lancÃ© est infÃ©rieur au temps d'entrainement
         	
         //A la fin du timer, notre IA this devient la meilleure de notre championnat (qui se trouve Ã  l'indice 0)
         this.setMLP(champions[0].getMLP().clone() );
         
 
-        System.out.println( "Parties d'entrainement effÃ©ctuÃ©es : " + practice_games);    
+        System.out.println( "Parties d'entrainement efféctuées : " + practice_games);    
     }
     
     /**
@@ -278,25 +274,25 @@ public class NeuralNetworkMLP extends Bot {
                     localPoints [0]++;
                     localPoints [1]++;
                 }
-                System.out.println ("Score : " + localPoints [0] + " - " + localPoints [1]);
+                /*System.out.println ("Score : " + localPoints [0] + " - " + localPoints [1]);
                 if (localPoints [0] == localPoints [1])
                 	System.out.println ("Égalité");
                 else if (localPoints [0] > localPoints [1])
                 	System.out.println (champions[i].getName () + " a gagné");
                 else
-                	System.out.println (champions[j].getName () + " a gagné");
+                	System.out.println (champions[j].getName () + " a gagné");*/
                 points [i] += localPoints [0];
                 points [j] += localPoints [1];
-                System.out.println ("Nombre de coups joués : " + nbMoves);
-                System.out.println ("Durée : " + df.format (new Date (runningTime)));
+                //System.out.println ("Nombre de coups joués : " + nbMoves);
+                //System.out.println ("Durée : " + df.format (new Date (runningTime)));
             }
         for (int i = 0; i < points.length; i++)
             points [i] = Math.round (points [i] * 100) / 100.;
-        System.out.println ("Scores finaux :");
+        /*System.out.println ("Scores finaux :");
         for (int i = 0; i < nbBots; i++)
         {
         	System.out.println (champions[i] + " : " + points [i]);
-        }
+        }*/
         
         final Map <String, Integer> map = new HashMap <String, Integer> ();
         for (int i = 0; i < 30; i++)
@@ -312,11 +308,11 @@ public class NeuralNetworkMLP extends Bot {
             }
         });
         java.util.Arrays.sort (points);
-        System.out.println ("Rangs :");
+        /*System.out.println ("Rangs :");
         for (int i = nbBots - 1; i >= 0; i--)
         {
         	System.out.println((nbBots - i) + ". " + champions[i] + " : " + points [i]);
-        }
+        }*/
         
 		return champions;
     }
