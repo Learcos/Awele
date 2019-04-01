@@ -176,13 +176,13 @@ public class NeuralNetworkMLP extends Bot {
         	
         	// Initialisation pour les manches suivantes
         	
-        	for(int i = 10; i < 20;i++) { 
-        		// Les bots à l'index 10 à 19 sont mutés
-        		modifyGenesRandomly(champions[i].getMLP());
-        	}
         	for(int i = 20; i < 30; i++) {
         		// Reproduction : les bots de l'index 20 Ã  29 sont des mixtes entre les gênes des 20 meilleures
         		champions[i].setMLP(reproduction(champions[i-20].getMLP(), champions[i-19].getMLP()));
+        	}
+        	for(int i = 10; i < 20;i++) { 
+        		// Les bots à l'index 10 à 19 sont mutés
+        		modifyGenesRandomly(champions[i].getMLP());
         	}
         	
         	practice_games++;
