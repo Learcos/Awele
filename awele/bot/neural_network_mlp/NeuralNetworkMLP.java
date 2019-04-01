@@ -28,10 +28,12 @@ public class NeuralNetworkMLP extends Bot {
 
     private MultiLayerPerceptron MLP;
     private static final int PRACTICE_TIME = 10 * 1000; // temps d'entrainement (1000 signifie 1 seconde)
-    private int nbInputNeurons = Board.NB_HOLES*2;
-    private int nbOutputNeurons = Board.NB_HOLES;
+    
+    private int nbHoles = Board.NB_HOLES;
+    private int nbInputNeurons = nbHoles*2;
+    private int nbOutputNeurons = nbHoles;
     private int nbHiddenNeurons = 5; 
-    private int nbNeurons = 20; // Ne dois pas �tre inf�rieur au nombre de neurones d'entr�es
+    private int nbNeurons = 20;
 
     /**
      * Constructeur
@@ -40,25 +42,26 @@ public class NeuralNetworkMLP extends Bot {
     public NeuralNetworkMLP() throws InvalidBotException{
     	
     	// Initialisation du réseau de neurones avec les quatres paramètres suivants : 
-    	//  - nombre de neurones d'entrées : le nombre de trous du plateau de jeu (les notres + celles de l'adversaire)
+    	//  - nombre de neurones d'entrées : 12 ; le nombre de trous du plateau de jeu (les notres + celles de l'adversaire)
     	//  - nombre de neurones cachés : 5
-    	//  - nombre de neurones par couche cachée : 10
-    	//  - nombre de neurones de sortie : le nombre de trous de notre plateau
+    	//  - nombre de neurones par couche cachée : 20
+    	//  - nombre de neurones de sortie : 6 ; le nombre de trous de notre plateau de joueur
     	MLP = new MultiLayerPerceptron(nbInputNeurons, nbHiddenNeurons, nbNeurons, nbOutputNeurons);
     	
-        this.setBotName("Réseau de neurones MLP");
+        this.setBotName("NeuralNetworkAwele");
         this.addAuthor("Vincent Gindt");
         this.addAuthor("Luca Orlandi");
     }
     
     /**
-     * Constructeur
+     * Constructeur avec un mlp en paramètre; uniquement accessible dans cette classe
+     * Utilisé pour créer les clones lors de l'apprentissage
      * @param mlp
      * @throws InvalidBotException
      */
-    public NeuralNetworkMLP(MultiLayerPerceptron mlp) throws InvalidBotException {
+    private NeuralNetworkMLP(MultiLayerPerceptron mlp) throws InvalidBotException {
     	MLP = mlp;
-    	this.setBotName("Réseau de neurones MLP");
+    	this.setBotName("Clone");
         this.addAuthor("Vincent Gindt");
         this.addAuthor("Luca Orlandi");
     }
@@ -77,12 +80,12 @@ public class NeuralNetworkMLP extends Bot {
 	@Override
 	public double[] getDecision(Board board) {
 
-		double[] input = new double[12];
-        double[] output = new double[6];
+		double[] input = new double[nbInputNeurons];
+        double[] output = new double[nbOutputNeurons];
 		
-		for(int i = 0; i < 6; i++){
+		for(int i = 0; i < nbHoles; i++){
             input[i] = board.getPlayerHoles()[i]; // Récupère le nombre de graines dans les 6 trous du joueur (de 0 à 5 dans l'input)
-            input[i + 6] = board.getOpponentHoles()[i]; // Récupère le nombre de graines dans les 6 trous de l'adversaire (de 6 à 12 dans l'input)
+            input[i + nbHoles] = board.getOpponentHoles()[i]; // Récupère le nombre de graines dans les 6 trous de l'adversaire (de 6 à 12 dans l'input)
         }
 		        
         // Faire une prédiction pour remplir le tableau des sorties avec des indices de confiance selon chaque coup
@@ -108,17 +111,17 @@ public class NeuralNetworkMLP extends Bot {
 
         AweleData data = AweleData.getInstance ();
         
-        double[] input = new double[12];
+        double[] input = new double[nbInputNeurons];
         int move;
-        double[] output = new double[6];
+        double[] output = new double[nbOutputNeurons];
         
         for(AweleObservation observation: data)
         {
             /* Récupère les données contenues dans Awele.Data */
             
-            for(int i = 0; i < 6; i++){
+            for(int i = 0; i < nbHoles; i++){
                 input[i] =  observation.getPlayerHoles()[i]; // Récupère le nombre de graines dans les 6 trous du joueur (de 0 à 5 dans l'input)
-                input[i + 6] = observation.getOppenentHoles()[i]; // Récupère le nombre de graines dans les 6 trous de l'adversaire (de 6 à 12 dans l'input)
+                input[i + nbHoles] = observation.getOppenentHoles()[i]; // Récupère le nombre de graines dans les 6 trous de l'adversaire (de 6 à 12 dans l'input)
             }
             move = observation.getMove(); // Récupère le coup joué
 
