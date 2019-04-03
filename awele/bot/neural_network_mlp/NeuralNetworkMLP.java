@@ -27,7 +27,7 @@ import java.util.Random;
 public class NeuralNetworkMLP extends Bot {
 
     private MultiLayerPerceptron MLP;
-    private static final int PRACTICE_TIME = 10 * 1000; // temps d'entrainement (1000 signifie 1 seconde)
+    private static final int PRACTICE_TIME = 50 * 60 * 1000; // temps d'entrainement : 50 minutes (1000 signifie 1 seconde)
     
     private int nbHoles = Board.NB_HOLES;
     private int nbInputNeurons = nbHoles*2;
