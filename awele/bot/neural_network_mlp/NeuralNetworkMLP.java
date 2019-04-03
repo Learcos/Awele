@@ -225,23 +225,26 @@ public class NeuralNetworkMLP extends Bot {
     	
     	HiddenNeuron neuronRandom = new HiddenNeuron();
     	
+    	Random random = new Random(System.currentTimeMillis());
+    	
     	for(int i = 0; i < nbHiddenNeurons; i++) {
     		for(int j = 0; j < nbNeurons; j++) {
     			
-    			if (i%2 == 0) { // i est pair
+    			double var = random.nextDouble(); // var est une variable aléatoire entre 0 et 1
+    			
+    			if (var <= 0.5) { // si var est inférieur à 0.5 ; le neurone du fils sera celui du père
     				neuronRandom.setPreviousLayer(mlpFather.getInputLayer());
-    				neuronRandom.setWeights(mlpFather.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui du p�re
+    				neuronRandom.setWeights(mlpFather.getHiddenLayers(i, j).getWeights());
     				neuronRandom.setActivationFunction(SigmoidFunction.getInstance());
     				neuronRandom.setError(mlpFather.getHiddenLayers(i, j).getError());
     			}
-    			else { // i est impair
+    			else { // si var est supérieur à 0.5 ; le neurone du fils sera celui de la mère
     				neuronRandom.setPreviousLayer(mlpMother.getInputLayer());
-    				neuronRandom.setWeights(mlpMother.getHiddenLayers(i, j).getWeights()); // Le neurone du fils sera celui de la m�re
+    				neuronRandom.setWeights(mlpMother.getHiddenLayers(i, j).getWeights());
     				neuronRandom.setActivationFunction(SigmoidFunction.getInstance());
     				neuronRandom.setError(mlpMother.getHiddenLayers(i, j).getError());
     			}
     			mlpSon.setHiddenLayers(i, j, neuronRandom);
-    			
     			
     		}
     	}
